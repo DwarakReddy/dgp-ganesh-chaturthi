@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DGP Ganesh Chaturthi Festival T-Shirts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            margin: 0;
+            padding: 0;
+            background: #f7f9fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #dcdcdc;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #0056b3;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333333;
+        }
+
+        .size-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .size-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #eaf4ff;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .size-option label {
+            margin: 0;
+            min-width: 100px;
+            font-weight: 600;
+            color: #333333;
+        }
+
+        .size-option button {
+            padding: 8px 12px;
+            border: none;
+            background: #007bff;
+            color: #ffffff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .size-option button:hover {
+            background: #0056b3;
+        }
+
+        .size-option input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            padding: 5px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            background: #28a745;
+            color: #ffffff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            margin-top: 15px;
+            display: block;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #218838;
+        }
+
+        .cancel-button {
+            background: #dc3545;
+            margin-top: 10px;
+        }
+
+        .cancel-button:hover {
+            background: #c82333;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .person-details {
+            margin-top: 20px;
+        }
+
+        #detailsList, #totalCounts {
+            list-style: none;
+            padding: 0;
+        }
+
+        #detailsList li, #totalCounts li {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #333333;
+        }
+
+        #detailsList li span {
+            flex-grow: 1;
+        }
+
+        .action-icons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-icons img {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .toggle-details {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            gap: 10px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            padding: 10px;
+            background: #eaf4ff;
+            border-top: 1px solid #dcdcdc;
+            text-align: center;
+            color: #333333;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        @media screen and (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DGP Ganesh Chaturthi Festival 2024 T-Shirts</h1>
+        <form id="tshirtForm">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="sizes">T-Shirt Sizes:</label>
+                <div class="size-options">
+                    <div class="size-option">
+                        <label>Small</label>
+                        <button type="button" onclick="changeQuantity('S', -1)">-</button>
+                        <input type="text" id="qty-S" value="0" readonly>
+                        <button type="button" onclick="changeQuantity('S', 1)">+</button>
+                    </div>
+                    <div class="size-option">
+                        <label>Medium</label>
+                        <button type="button" onclick="changeQuantity('M', -1)">-</button>
+                        <input type="text" id="qty-M" value="0" readonly>
+                        <button type="button" onclick="changeQuantity('M', 1)">+</button>
+                    </div>
+                    <div class="size-option">
+                        <label>Large</label>
+                        <button type="button" onclick="changeQuantity('L', -1)">-</button>
+                        <input type="text" id="qty-L" value="0" readonly>
+                        <button type="button" onclick="changeQuantity('L', 1)">+</button>
+                    </div>
+                    <div class="size-option">
+                        <label>Extra Large</label>
+                        <button type="button" onclick="changeQuantity('XL', -1)">-</button>
+                        <input type="text" id="qty-XL" value="0" readonly>
+                        <button type="button" onclick="changeQuantity('XL', 1)">+</button>
+                    </div>
+                </div>
+            </div>
+            <button type="button" onclick="submitForm()">Submit</button>
+            <button type="button" class="cancel-button" onclick="cancelForm()">Cancel</button>
+            <div class="toggle-details">
+                <button id="showDetailsButton" type="button" onclick="toggleDetails()">Show Details</button>
+                <button id="hideDetailsButton" type="button" class="hidden" onclick="toggleDetails()">Hide Details</button>
+            </div>
+        </form>
+        <div id="detailsSection" class="hidden">
+            <h2>Selected T-Shirts</h2>
+            <ul id="detailsList"></ul>
+            <h3>Total Counts</h3>
+            <ul id="totalCounts"></ul>
+        </div>
+        <button type="button" onclick="downloadDetails()">Download PDF</button>
+        <div class="footer">
+            <p>Application developed by Dwaraka Reddy</p>
+            <p>Email: dwarakatech@gmail.com</p>
+            <p>Phone: 9121693925</p>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.6.0/jspdf.umd.min.js"></script>
+    <script>
+        const selectedShirts = {
+            S: 0,
+            M: 0,
+            L: 0,
+            XL: 0
+        };
+        let editingIndex = null;
+
+        function changeQuantity(size, change) {
+            const qtyInput = document.getElementById(`qty-${size}`);
+            let currentQty = parseInt(qtyInput.value);
+            currentQty += change;
+            if (currentQty < 0) currentQty = 0;
+            qtyInput.value = currentQty;
+            selectedShirts[size] = currentQty;
+        }
+
+        function submitForm() {
+            const name = document.getElementById('name').value;
+            if (!name) {
+                alert('Please enter a name.');
+                return;
+            }
+
+            const entry = {
+                name,
+                sizes: { ...selectedShirts }
+            };
+
+            if (editingIndex !== null) {
+                updateEntry(editingIndex, entry);
+            } else {
+                addEntry(entry);
+            }
+            resetForm();
+            updateTotalCounts();
+        }
+
+        function addEntry(entry) {
+            const detailsList = document.getElementById('detailsList');
+            const li = document.createElement('li');
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = `${entry.name} - Small: ${entry.sizes.S}, Medium: ${entry.sizes.M}, Large: ${entry.sizes.L}, XL: ${entry.sizes.XL}`;
+
+            const actionIcons = document.createElement('div');
+            actionIcons.className = 'action-icons';
+
+            const editIcon = document.createElement('img');
+            editIcon.src = 'https://img.icons8.com/ios-filled/50/edit.png';
+            editIcon.alt = 'Edit';
+            editIcon.onclick = () => editEntry(entry, li);
+
+            const deleteIcon = document.createElement('img');
+            deleteIcon.src = 'https://img.icons8.com/ios-filled/50/delete-sign.png';
+            deleteIcon.alt = 'Delete';
+            deleteIcon.onclick = () => deleteEntry(li);
+
+            actionIcons.appendChild(editIcon);
+            actionIcons.appendChild(deleteIcon);
+            li.appendChild(nameSpan);
+            li.appendChild(actionIcons);
+            detailsList.appendChild(li);
+        }
+
+        function editEntry(entry, li) {
+            document.getElementById('name').value = entry.name;
+            document.getElementById('qty-S').value = entry.sizes.S;
+            document.getElementById('qty-M').value = entry.sizes.M;
+            document.getElementById('qty-L').value = entry.sizes.L;
+            document.getElementById('qty-XL').value = entry.sizes.XL;
+
+            selectedShirts.S = entry.sizes.S;
+            selectedShirts.M = entry.sizes.M;
+            selectedShirts.L = entry.sizes.L;
+            selectedShirts.XL = entry.sizes.XL;
+
+            editingIndex = [...li.parentElement.children].indexOf(li);
+        }
+
+        function updateEntry(index, entry) {
+            const detailsList = document.getElementById('detailsList');
+            const li = detailsList.children[index];
+            const nameSpan = li.querySelector('span');
+            nameSpan.textContent = `${entry.name} - Small: ${entry.sizes.S}, Medium: ${entry.sizes.M}, Large: ${entry.sizes.L}, XL: ${entry.sizes.XL}`;
+            editingIndex = null;
+        }
+
+        function deleteEntry(li) {
+            li.remove();
+            updateTotalCounts();
+        }
+
+        function cancelForm() {
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('tshirtForm').reset();
+            Object.keys(selectedShirts).forEach(size => selectedShirts[size] = 0);
+            editingIndex = null;
+        }
+
+        function toggleDetails() {
+            const detailsSection = document.getElementById('detailsSection');
+            const showButton = document.getElementById('showDetailsButton');
+            const hideButton = document.getElementById('hideDetailsButton');
+            detailsSection.classList.toggle('hidden');
+            showButton.classList.toggle('hidden');
+            hideButton.classList.toggle('hidden');
+            updateTotalCounts();
+        }
+
+        function updateTotalCounts() {
+            const totalCounts = {
+                S: 0,
+                M: 0,
+                L: 0,
+                XL: 0
+            };
+
+            const detailsList = document.getElementById('detailsList');
+            [...detailsList.children].forEach(li => {
+                const sizes = li.querySelector('span').textContent.match(/Small: (\d+), Medium: (\d+), Large: (\d+), XL: (\d+)/).slice(1);
+                totalCounts.S += parseInt(sizes[0]);
+                totalCounts.M += parseInt(sizes[1]);
+                totalCounts.L += parseInt(sizes[2]);
+                totalCounts.XL += parseInt(sizes[3]);
+            });
+
+            const totalCountsList = document.getElementById('totalCounts');
+            totalCountsList.innerHTML = `
+                <li>Small: ${totalCounts.S}</li>
+                <li>Medium: ${totalCounts.M}</li>
+                <li>Large: ${totalCounts.L}</li>
+                <li>Extra Large: ${totalCounts.XL}</li>
+            `;
+        }
+
+        function downloadDetails() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(20);
+            doc.text('DGP Ganesh Chaturthi Festival T-Shirts', 20, 20);
+            doc.setFontSize(12);
+
+            const detailsList = document.getElementById('detailsList');
+            let y = 40;
+            [...detailsList.children].forEach(li => {
+                const text = li.querySelector('span').textContent;
+                doc.text(text, 20, y);
+                y += 10;
+            });
+
+            doc.save('tshirt-details.pdf');
+        }
+    </script>
+</body>
+</html>
