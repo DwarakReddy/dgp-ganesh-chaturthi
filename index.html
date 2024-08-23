@@ -201,7 +201,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>DGP Ganesh Chaturthi Festival 2024 T-Shirts</h1>
+        <h1>DGP Ganesh Chaturthi Festival T-Shirts</h1>
         <form id="tshirtForm">
             <div class="form-group">
                 <label for="name">Name:</label>
@@ -266,6 +266,8 @@
         };
         let editingIndex = null;
 
+        document.addEventListener('DOMContentLoaded', loadEntries);
+
         function changeQuantity(size, change) {
             const qtyInput = document.getElementById(`qty-${size}`);
             let currentQty = parseInt(qtyInput.value);
@@ -278,140 +280,133 @@
         function submitForm() {
             const name = document.getElementById('name').value;
             if (!name) {
-                alert('Please enter a name.');
+                alert('Please enter your name.');
                 return;
             }
 
-            const entry = {
+            if (selectedShirts.S === 0 && selectedShirts.M === 0 && selectedShirts.L === 0 && selectedShirts.XL === 0) {
+                alert('Please select at least one T-shirt size.');
+                return;
+            }
+
+            const personDetails = {
                 name,
-                sizes: { ...selectedShirts }
+                sizes: {...selectedShirts}
             };
 
-            if (editingIndex !== null) {
-                updateEntry(editingIndex, entry);
-            } else {
-                addEntry(entry);
-            }
+            saveEntry(personDetails);
+            updateDetailsList();
             resetForm();
+        }
+
+        function saveEntry(personDetails) {
+            let entries = JSON.parse(localStorage.getItem('tshirtEntries')) || [];
+            if (editingIndex !== null) {
+                entries[editingIndex] = personDetails;
+                editingIndex = null;
+            } else {
+                entries.push(personDetails);
+            }
+            localStorage.setItem('tshirtEntries', JSON.stringify(entries));
+        }
+
+        function loadEntries() {
+            const entries = JSON.parse(localStorage.getItem('tshirtEntries')) || [];
+            entries.forEach(person => {
+                selectedShirts.S += person.sizes.S || 0;
+                selectedShirts.M += person.sizes.M || 0;
+                selectedShirts.L += person.sizes.L || 0;
+                selectedShirts.XL += person.sizes.XL || 0;
+            });
+            updateDetailsList();
             updateTotalCounts();
         }
 
-        function addEntry(entry) {
+        function updateDetailsList() {
             const detailsList = document.getElementById('detailsList');
-            const li = document.createElement('li');
-            const nameSpan = document.createElement('span');
-            nameSpan.textContent = `${entry.name} - Small: ${entry.sizes.S}, Medium: ${entry.sizes.M}, Large: ${entry.sizes.L}, XL: ${entry.sizes.XL}`;
-
-            const actionIcons = document.createElement('div');
-            actionIcons.className = 'action-icons';
-
-            const editIcon = document.createElement('img');
-            editIcon.src = 'https://img.icons8.com/ios-filled/50/edit.png';
-            editIcon.alt = 'Edit';
-            editIcon.onclick = () => editEntry(entry, li);
-
-            const deleteIcon = document.createElement('img');
-            deleteIcon.src = 'https://img.icons8.com/ios-filled/50/delete-sign.png';
-            deleteIcon.alt = 'Delete';
-            deleteIcon.onclick = () => deleteEntry(li);
-
-            actionIcons.appendChild(editIcon);
-            actionIcons.appendChild(deleteIcon);
-            li.appendChild(nameSpan);
-            li.appendChild(actionIcons);
-            detailsList.appendChild(li);
+            detailsList.innerHTML = '';
+            const entries = JSON.parse(localStorage.getItem('tshirtEntries')) || [];
+            entries.forEach((person, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${person.name}: Small ${person.sizes.S || 0}, Medium ${person.sizes.M || 0}, Large ${person.sizes.L || 0}, Extra Large ${person.sizes.XL || 0}</span>
+                    <div class="action-icons">
+                        <img src="https://img.icons8.com/material-outlined/24/000000/edit--v1.png" alt="Edit" onclick="editEntry(${index})">
+                        <img src="https://img.icons8.com/material-outlined/24/000000/erase.png" alt="Remove" onclick="removeEntry(${index})">
+                    </div>
+                `;
+                detailsList.appendChild(li);
+            });
         }
 
-        function editEntry(entry, li) {
-            document.getElementById('name').value = entry.name;
-            document.getElementById('qty-S').value = entry.sizes.S;
-            document.getElementById('qty-M').value = entry.sizes.M;
-            document.getElementById('qty-L').value = entry.sizes.L;
-            document.getElementById('qty-XL').value = entry.sizes.XL;
-
-            selectedShirts.S = entry.sizes.S;
-            selectedShirts.M = entry.sizes.M;
-            selectedShirts.L = entry.sizes.L;
-            selectedShirts.XL = entry.sizes.XL;
-
-            editingIndex = [...li.parentElement.children].indexOf(li);
+        function updateTotalCounts() {
+            const totalCounts = document.getElementById('totalCounts');
+            totalCounts.innerHTML = `
+                <li>Small: ${selectedShirts.S}</li>
+                <li>Medium: ${selectedShirts.M}</li>
+                <li>Large: ${selectedShirts.L}</li>
+                <li>Extra Large: ${selectedShirts.XL}</li>
+            `;
         }
 
-        function updateEntry(index, entry) {
-            const detailsList = document.getElementById('detailsList');
-            const li = detailsList.children[index];
-            const nameSpan = li.querySelector('span');
-            nameSpan.textContent = `${entry.name} - Small: ${entry.sizes.S}, Medium: ${entry.sizes.M}, Large: ${entry.sizes.L}, XL: ${entry.sizes.XL}`;
-            editingIndex = null;
+        function editEntry(index) {
+            const entries = JSON.parse(localStorage.getItem('tshirtEntries')) || [];
+            const person = entries[index];
+            document.getElementById('name').value = person.name;
+            Object.keys(person.sizes).forEach(size => {
+                document.getElementById(`qty-${size}`).value = person.sizes[size];
+                selectedShirts[size] = person.sizes[size];
+            });
+            editingIndex = index;
         }
 
-        function deleteEntry(li) {
-            li.remove();
-            updateTotalCounts();
+        function removeEntry(index) {
+            let entries = JSON.parse(localStorage.getItem('tshirtEntries')) || [];
+            entries.splice(index, 1);
+            localStorage.setItem('tshirtEntries', JSON.stringify(entries));
+            loadEntries();
+        }
+
+        function resetForm() {
+            document.getElementById('name').value = '';
+            Object.keys(selectedShirts).forEach(size => {
+                document.getElementById(`qty-${size}`).value = '0';
+                selectedShirts[size] = 0;
+            });
         }
 
         function cancelForm() {
             resetForm();
         }
 
-        function resetForm() {
-            document.getElementById('tshirtForm').reset();
-            Object.keys(selectedShirts).forEach(size => selectedShirts[size] = 0);
-            editingIndex = null;
-        }
-
         function toggleDetails() {
             const detailsSection = document.getElementById('detailsSection');
-            const showButton = document.getElementById('showDetailsButton');
-            const hideButton = document.getElementById('hideDetailsButton');
-            detailsSection.classList.toggle('hidden');
-            showButton.classList.toggle('hidden');
-            hideButton.classList.toggle('hidden');
-            updateTotalCounts();
-        }
-
-        function updateTotalCounts() {
-            const totalCounts = {
-                S: 0,
-                M: 0,
-                L: 0,
-                XL: 0
-            };
-
-            const detailsList = document.getElementById('detailsList');
-            [...detailsList.children].forEach(li => {
-                const sizes = li.querySelector('span').textContent.match(/Small: (\d+), Medium: (\d+), Large: (\d+), XL: (\d+)/).slice(1);
-                totalCounts.S += parseInt(sizes[0]);
-                totalCounts.M += parseInt(sizes[1]);
-                totalCounts.L += parseInt(sizes[2]);
-                totalCounts.XL += parseInt(sizes[3]);
-            });
-
-            const totalCountsList = document.getElementById('totalCounts');
-            totalCountsList.innerHTML = `
-                <li>Small: ${totalCounts.S}</li>
-                <li>Medium: ${totalCounts.M}</li>
-                <li>Large: ${totalCounts.L}</li>
-                <li>Extra Large: ${totalCounts.XL}</li>
-            `;
+            const showDetailsButton = document.getElementById('showDetailsButton');
+            const hideDetailsButton = document.getElementById('hideDetailsButton');
+            if (detailsSection.classList.contains('hidden')) {
+                detailsSection.classList.remove('hidden');
+                showDetailsButton.classList.add('hidden');
+                hideDetailsButton.classList.remove('hidden');
+            } else {
+                detailsSection.classList.add('hidden');
+                showDetailsButton.classList.remove('hidden');
+                hideDetailsButton.classList.add('hidden');
+            }
         }
 
         function downloadDetails() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-
-            doc.setFontSize(20);
-            doc.text('DGP Ganesh Chaturthi Festival T-Shirts', 20, 20);
-            doc.setFontSize(12);
-
-            const detailsList = document.getElementById('detailsList');
-            let y = 40;
-            [...detailsList.children].forEach(li => {
-                const text = li.querySelector('span').textContent;
-                doc.text(text, 20, y);
+            const entries = JSON.parse(localStorage.getItem('tshirtEntries')) || [];
+            let y = 10;
+            doc.setFontSize(18);
+            doc.text("DGP Ganesh Chaturthi Festival T-Shirts", 105, y, { align: "center" });
+            y += 20;
+            entries.forEach(person => {
+                doc.setFontSize(14);
+                doc.text(`${person.name}: Small ${person.sizes.S || 0}, Medium ${person.sizes.M || 0}, Large ${person.sizes.L || 0}, Extra Large ${person.sizes.XL || 0}`, 10, y);
                 y += 10;
             });
-
             doc.save('tshirt-details.pdf');
         }
     </script>
