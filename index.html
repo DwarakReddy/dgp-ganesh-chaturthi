@@ -31,11 +31,12 @@
 
         h1 {
             font-family: 'Montserrat', sans-serif;
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 700;
             text-align: center;
             margin-bottom: 20px;
-            color: #0056b3;
+            color: #ff5722; /* Rich, vibrant orange color for the title */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for a grander look */
         }
 
         .form-group {
@@ -157,9 +158,9 @@
             gap: 10px;
         }
 
-        .action-icons img {
-            width: 20px;
-            height: 20px;
+        .action-icons svg {
+            width: 24px;
+            height: 24px;
             cursor: pointer;
         }
 
@@ -274,109 +275,89 @@
             currentQty += change;
             if (currentQty < 0) currentQty = 0;
             qtyInput.value = currentQty;
-            selectedShirts[size] = currentQty;
         }
 
         function submitForm() {
-            const name = document.getElementById('name').value;
-            if (!name) {
-                alert('Please enter your name.');
+            const name = document.getElementById('name').value.trim();
+            const sizes = ['S', 'M', 'L', 'XL'];
+            const quantities = sizes.map(size => parseInt(document.getElementById(`qty-${size}`).value));
+            const shirtData = sizes.reduce((acc, size, index) => {
+                acc[size] = quantities[index];
+                return acc;
+            }, {});
+            if (!name || Object.values(shirtData).every(qty => qty === 0)) {
+                alert('Please enter a name and select at least one T-shirt size.');
                 return;
             }
-
-            if (selectedShirts.S === 0 && selectedShirts.M === 0 && selectedShirts.L === 0 && selectedShirts.XL === 0) {
-                alert('Please select at least one T-shirt size.');
-                return;
-            }
-
-            const personDetails = {
-                name,
-                sizes: {...selectedShirts}
-            };
-
-            saveEntry(personDetails);
-            updateDetailsList();
-            resetForm();
-        }
-
-        function saveEntry(personDetails) {
+            const entry = { name, ...shirtData };
             let entries = JSON.parse(localStorage.getItem('tshirtEntries')) || [];
             if (editingIndex !== null) {
-                entries[editingIndex] = personDetails;
+                entries[editingIndex] = entry;
                 editingIndex = null;
             } else {
-                entries.push(personDetails);
+                entries.push(entry);
             }
             localStorage.setItem('tshirtEntries', JSON.stringify(entries));
+            displayEntries();
+            document.getElementById('tshirtForm').reset();
+            resetQuantities();
         }
 
-        function loadEntries() {
+        function cancelForm() {
+            document.getElementById('tshirtForm').reset();
+            resetQuantities();
+            editingIndex = null;
+        }
+
+        function displayEntries() {
             const entries = JSON.parse(localStorage.getItem('tshirtEntries')) || [];
-            entries.forEach(person => {
-                selectedShirts.S += person.sizes.S || 0;
-                selectedShirts.M += person.sizes.M || 0;
-                selectedShirts.L += person.sizes.L || 0;
-                selectedShirts.XL += person.sizes.XL || 0;
-            });
-            updateDetailsList();
-            updateTotalCounts();
-        }
-
-        function updateDetailsList() {
             const detailsList = document.getElementById('detailsList');
+            const totalCounts = { S: 0, M: 0, L: 0, XL: 0 };
             detailsList.innerHTML = '';
-            const entries = JSON.parse(localStorage.getItem('tshirtEntries')) || [];
-            entries.forEach((person, index) => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <span>${person.name}: Small ${person.sizes.S || 0}, Medium ${person.sizes.M || 0}, Large ${person.sizes.L || 0}, Extra Large ${person.sizes.XL || 0}</span>
+            entries.forEach((entry, index) => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <span>${entry.name}</span>
+                    <span>Small: ${entry.S}</span>
+                    <span>Medium: ${entry.M}</span>
+                    <span>Large: ${entry.L}</span>
+                    <span>Extra Large: ${entry.XL}</span>
                     <div class="action-icons">
-                        <img src="https://img.icons8.com/material-outlined/24/000000/edit--v1.png" alt="Edit" onclick="editEntry(${index})">
-                        <img src="https://img.icons8.com/material-outlined/24/000000/erase.png" alt="Remove" onclick="removeEntry(${index})">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="editEntry(${index})"><path d="M15 3L21 9L9 21H3V15L15 3Z" fill="#0056b3"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="removeEntry(${index})"><path d="M6 6L18 18M6 18L18 6" stroke="#dc3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </div>
                 `;
-                detailsList.appendChild(li);
+                detailsList.appendChild(listItem);
+                totalCounts.S += entry.S;
+                totalCounts.M += entry.M;
+                totalCounts.L += entry.L;
+                totalCounts.XL += entry.XL;
             });
-        }
-
-        function updateTotalCounts() {
-            const totalCounts = document.getElementById('totalCounts');
-            totalCounts.innerHTML = `
-                <li>Small: ${selectedShirts.S}</li>
-                <li>Medium: ${selectedShirts.M}</li>
-                <li>Large: ${selectedShirts.L}</li>
-                <li>Extra Large: ${selectedShirts.XL}</li>
+            document.getElementById('totalCounts').innerHTML = `
+                <li>Small: ${totalCounts.S}</li>
+                <li>Medium: ${totalCounts.M}</li>
+                <li>Large: ${totalCounts.L}</li>
+                <li>Extra Large: ${totalCounts.XL}</li>
             `;
         }
 
         function editEntry(index) {
-            const entries = JSON.parse(localStorage.getItem('tshirtEntries')) || [];
-            const person = entries[index];
-            document.getElementById('name').value = person.name;
-            Object.keys(person.sizes).forEach(size => {
-                document.getElementById(`qty-${size}`).value = person.sizes[size];
-                selectedShirts[size] = person.sizes[size];
+            const entries = JSON.parse(localStorage.getItem('tshirtEntries'));
+            const entry = entries[index];
+            document.getElementById('name').value = entry.name;
+            Object.keys(entry).forEach(size => {
+                if (size !== 'name') {
+                    document.getElementById(`qty-${size}`).value = entry[size];
+                }
             });
             editingIndex = index;
         }
 
         function removeEntry(index) {
-            let entries = JSON.parse(localStorage.getItem('tshirtEntries')) || [];
+            let entries = JSON.parse(localStorage.getItem('tshirtEntries'));
             entries.splice(index, 1);
             localStorage.setItem('tshirtEntries', JSON.stringify(entries));
-            loadEntries();
-        }
-
-        function resetForm() {
-            document.getElementById('name').value = '';
-            Object.keys(selectedShirts).forEach(size => {
-                document.getElementById(`qty-${size}`).value = '0';
-                selectedShirts[size] = 0;
-            });
-        }
-
-        function cancelForm() {
-            resetForm();
+            displayEntries();
         }
 
         function toggleDetails() {
@@ -397,17 +378,29 @@
         function downloadDetails() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+            doc.text('DGP Ganesh Chaturthi Festival 2024 T-Shirts', 10, 10);
             const entries = JSON.parse(localStorage.getItem('tshirtEntries')) || [];
-            let y = 10;
-            doc.setFontSize(18);
-            doc.text("DGP Ganesh Chaturthi Festival T-Shirts", 105, y, { align: "center" });
-            y += 20;
-            entries.forEach(person => {
-                doc.setFontSize(14);
-                doc.text(`${person.name}: Small ${person.sizes.S || 0}, Medium ${person.sizes.M || 0}, Large ${person.sizes.L || 0}, Extra Large ${person.sizes.XL || 0}`, 10, y);
+            let y = 20;
+            entries.forEach(entry => {
+                doc.text(`Name: ${entry.name}`, 10, y);
                 y += 10;
+                doc.text(`Small: ${entry.S}`, 10, y);
+                doc.text(`Medium: ${entry.M}`, 60, y);
+                doc.text(`Large: ${entry.L}`, 110, y);
+                doc.text(`Extra Large: ${entry.XL}`, 160, y);
+                y += 20;
             });
             doc.save('tshirt-details.pdf');
+        }
+
+        function loadEntries() {
+            displayEntries();
+        }
+
+        function resetQuantities() {
+            ['S', 'M', 'L', 'XL'].forEach(size => {
+                document.getElementById(`qty-${size}`).value = 0;
+            });
         }
     </script>
 </body>
