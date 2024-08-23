@@ -265,14 +265,19 @@
             L: 0,
             XL: 0
         };
+
         let editingIndex = null;
 
-        document.addEventListener('DOMContentLoaded', loadEntries);
+        document.addEventListener('DOMContentLoaded', () => {
+            loadEntries();
+            document.getElementById('showDetailsButton').classList.remove('hidden');
+            document.getElementById('hideDetailsButton').classList.add('hidden');
+        });
 
-        function changeQuantity(size, change) {
+        function changeQuantity(size, delta) {
             const qtyInput = document.getElementById(`qty-${size}`);
             let currentQty = parseInt(qtyInput.value);
-            currentQty += change;
+            currentQty += delta;
             if (currentQty < 0) currentQty = 0;
             qtyInput.value = currentQty;
         }
