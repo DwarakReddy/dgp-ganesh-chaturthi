@@ -265,6 +265,7 @@
             L: 0,
             XL: 0
         };
+        var entriesList = [];
 
         let editingIndex = null;
 
@@ -301,6 +302,7 @@
                 editingIndex = null;
             } else {
                 entries.push(entry);
+                entriesList.push(entry);
             }
             localStorage.setItem('tshirtEntries', JSON.stringify(entries));
             displayEntries();
@@ -315,7 +317,8 @@
         }
 
         function displayEntries() {
-            const entries = JSON.parse(localStorage.getItem('tshirtEntries')) || [];
+            //const entries = JSON.parse(localStorage.getItem('tshirtEntries')) || [];
+            const entries = entriesList;
             const detailsList = document.getElementById('detailsList');
             const totalCounts = { S: 0, M: 0, L: 0, XL: 0 };
             detailsList.innerHTML = '';
